@@ -1,6 +1,12 @@
 package org.example;
 
-public class Products {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class Products implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L; //persistance
+
     int id;
     String name;
     double basePrice;

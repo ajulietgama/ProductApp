@@ -1,4 +1,5 @@
 package org.example;
+import java.io.*;
 
 import java.util.HashMap;
 import java.util.Scanner;
@@ -7,8 +8,10 @@ public class Application {
     static HashMap<Integer, Products> inventory = new HashMap<>();
     static Scanner sc = new Scanner(System.in);
 
+    private static final String FILE_NAME = "inventory.dat";
 
     public static void main(String[] args) {
+        loadData();
 
         int option;
         do {
@@ -24,17 +27,23 @@ public class Application {
             switch (option) {
                 case 1:
                     addProduct();
+                    saveData();
                     break;
                 case 2:
                     viewProducts();
+                    saveData();
                     break;
                 case 3:
                     modifyProduct();
+                    saveData();
                     break;
                 case 4:
                     totalValue();
+                    saveData();
                     break;
-
+                case 5:
+                    saveData();
+                    System.out.println("Exit application");
 
             }
         } while (option != 5);
@@ -112,6 +121,28 @@ public class Application {
         }
         System.out.printf("Total value: %.2f\n", total);
         }
+
+
+    private static void saveData() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_NAME))) {
+            oos.writeObject(inventory);
+            System.out.println("💾 Datos guardados automáticamente.");
+        } catch (IOException e) {
+            System.out.println("❌ Error al guardar: " + e.getMessage());
+        }
+    }
+
+    private static void loadData() {
+        File file = new File(FILE_NAME);
+        if (file.exists()) {
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_NAME))) {
+                inventory = (HashMap<Integer, Products>) ois.readObject();
+                System.out.println("📂 Data saved automatically");
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.println("⚠️ No se pudieron cargar los datos previos.");
+            }
+        }
+    }
 
 }
 
