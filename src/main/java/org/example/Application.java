@@ -8,7 +8,7 @@ public class Application {
     static HashMap<Integer, Products> inventory = new HashMap<>();
     static Scanner sc = new Scanner(System.in);
 
-    private static final String FILE_NAME = "inventory.dat";
+    private static final String FILE_NAME = "inventory.json";
 
     public static void main(String[] args) {
         loadData();
@@ -31,7 +31,6 @@ public class Application {
                     break;
                 case 2:
                     viewProducts();
-                    saveData();
                     break;
                 case 3:
                     modifyProduct();
@@ -39,10 +38,9 @@ public class Application {
                     break;
                 case 4:
                     totalValue();
-                    saveData();
                     break;
                 case 5:
-                    saveData();
+
                     System.out.println("Exit application");
 
             }
@@ -50,22 +48,30 @@ public class Application {
 
     }
 
-    private static void addProduct() {
-        System.out.print("Unique Id: ");
+    private static int getUniqueId() {
+        while (true) {
+            System.out.print("Unique Id: ");
+            int id = sc.nextInt();
 
-        int id = sc.nextInt();
-
-        // Check if ID already exists to avoid overwriting accidentally
-        if (inventory.containsKey(id)) {
-            System.out.println("Error: The id already exists!");
-            return;
+            if (inventory.containsKey(id)) {
+                System.out.println("Error: The id " + id + " already exists! Try a different one.");
+            } else {
+                return id; // This ends the loop and gives the ID back to addProduct
+            }
         }
+    }
+
+    private static void addProduct() {
+        // Call our new method to get a valid ID
+        int id = getUniqueId();
 
         System.out.print("Type (1. Hardware / 2. Software): ");
         int type = sc.nextInt();
-        sc.nextLine();
+        sc.nextLine(); // Clear scanner buffer
+
         System.out.print("Name: ");
         String name = sc.nextLine();
+
         System.out.print("Base price: ");
         double basePrice = sc.nextDouble();
 
@@ -73,13 +79,13 @@ public class Application {
             System.out.print("Weight (kg): ");
             double weight = sc.nextDouble();
             inventory.put(id, new Hardware(id, name, basePrice, weight));
-
-
         } else {
             System.out.print("Software license in months: ");
             int licenseMonths = sc.nextInt();
             inventory.put(id, new Software(id, name, basePrice, licenseMonths));
         }
+
+        System.out.println("Product added successfully!");
     }
 
     private static void viewProducts() {
@@ -143,6 +149,7 @@ public class Application {
             }
         }
     }
+
 
 }
 
